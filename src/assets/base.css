@@ -117,3 +117,17 @@ body {
 .font-size-36{
   font-size: 36px;
 }
+
+label{
+  color: #7e7e81;
+}
+
+input{
+  height: 40px;
+}
+input:focus{
+  outline: none;
+  background-color: #f0f0f0;
+  border-bottom: 2px solid #7e7e81 !important;
+  transition: 200ms all  ease-in-out;
+}
