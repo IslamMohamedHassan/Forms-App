@@ -18,7 +18,7 @@
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
               <li style="cursor:pointer" v-for="option in optionValues" :key="option.value">
-                <a class="dropdown-item d-flex align-items-center" @click="updateSelectedValue(option.value)">
+                <a class="dropdown-item d-flex align-items-center" @click="updateSelectedValue(option.value,componentIndex)">
                   <span class="d-block  me-2" v-html="option.icon"></span>
                   <span class="d-block font-size-20">   {{ option.label }}</span> 
                 </a>
@@ -29,7 +29,7 @@
       </div>
       <!-- Start row of multi choice and multi Checkboxes -->
       <div class="row align-items-center" v-if="selectedValue === 'Multiple Choice' || selectedValue == 'Checkboxes' || selectedValue == 'Dropdown'">
-        <div  v-for="(option,i) in  multipleChoiceOption" :key="i" >
+        <div  v-for="(option,i) in  containerMultipleChoiceOption[componentIndex]" :key="i" >
           <div class="d-flex align-items-center justify-content-between" v-if="option.placeholder !== 'Row' && option.placeholder !== 'Column'">
           <div>
             <input v-if="selectedValue === 'Multiple Choice'" :type="selectedInput"  class="form-check-input custom-radio"  disabled>
@@ -43,14 +43,14 @@
             <input style="display: none;" type="file" id="up-img">
           </div>
           <div class="ms-3 d-flex">
-            <button v-if="regularOptions.length !== 1 || option.placeholder === 'others'"  @click="removeOption(option.id)" class="border-0 bg-transparent fw-bold fs-4"><i class="fa-solid fa-x text-secondary"></i></button>
+            <button v-if="regularOptions.length !== 1 || option.placeholder === 'others'"  @click="removeOption(option.id,componentIndex)" class="border-0 bg-transparent fw-bold fs-4"><i class="fa-solid fa-x text-secondary"></i></button>
           </div>
         </div>
         </div>
         <div class="col-12 py-3">
-          <button class=" border-0 bg-transparent add-field-btn" @click="addOption('Option')">Add Option</button>
+          <button class=" border-0 bg-transparent add-field-btn" @click="addOption('Option',componentIndex)">Add Option</button>
           <span v-if="addOtherBtn && selectedValue !== 'Dropdown'"> or</span>
-          <button v-if="addOtherBtn && selectedValue !== 'Dropdown'"  :class="`border-0 bg-transparent add-field-btn text-primary ${!addOtherBtn? 'd-none':''}`" @click="addOption('others')">Add "Other"</button>
+          <button v-if="addOtherBtn && selectedValue !== 'Dropdown'"  :class="`border-0 bg-transparent add-field-btn text-primary ${!addOtherBtn? 'd-none':''}`" @click="addOption('others',componentIndex)">Add "Other"</button>
         </div>
        
       </div>
@@ -183,35 +183,35 @@
       <div class="mt-3 row"  v-if="selectedValue === 'Multiple Choice Grid' || selectedValue === 'Checkbox Grid'">
         <div class="col-lg-6">
           <h6>Rows</h6>
-          <div  v-for="(option,i) in  multipleChoiceOption" :key="i">
+          <div  v-for="(option,i) in  containerMultipleChoiceOption[componentIndex]" :key="i">
             <div v-if="option.placeholder == 'Row'">
               <label  class="me-1" for="">{{ option.label }} . </label>
               <input  class="border-0" type="text" :placeholder="option.placeholder + ' ' + option.label">
               <button 
                 v-if="rowOptions.length !== 1"
-                @click="removeOption(option.id)" class="border-0 bg-transparent fw-bold fs-6 "><i class="fa-solid fa-x text-secondary"></i></button>
+                @click="removeOption(option.id,componentIndex)" class="border-0 bg-transparent fw-bold fs-6 "><i class="fa-solid fa-x text-secondary"></i></button>
             </div>
             
           </div>
           <div>
-            <button  rowOptions class=" border-0 bg-transparent add-field-btn text-primary mt-2" @click="addOption('Row')">Add Row</button>
+            <button  rowOptions class=" border-0 bg-transparent add-field-btn text-primary mt-2" @click="addOption('Row',componentIndex)">Add Row</button>
           </div>
         </div>
         <div class="col-lg-6">
           <h6>Columns</h6>
-          <div  v-for="(option,i) in  multipleChoiceOption" :key="i">
+          <div  v-for="(option,i) in  containerMultipleChoiceOption[componentIndex]" :key="i">
             <div class="d-flex align-items-center" v-if="option.placeholder == 'Column'">
               <input v-if="selectedValue === 'Multiple Choice Grid'"  class=" form-check-input custom-radio me-2" type="radio" disabled>
               <input v-if="selectedValue === 'Checkbox Grid'"  class=" form-check-input custom-radio me-2" type="checkbox" disabled>
               <input   class="border-0" type="text" :placeholder="option.placeholder + ' ' + option.label">
               <button  
                 v-if="columnOptions.length !== 1"
-                @click="removeOption(option.id)" class="border-0 bg-transparent fw-bold fs-6 "><i class="fa-solid fa-x text-secondary"></i></button>
+                @click="removeOption(option.id,componentIndex)" class="border-0 bg-transparent fw-bold fs-6 "><i class="fa-solid fa-x text-secondary"></i></button>
             </div>
             
           </div>
           <div>
-            <button   class=" border-0 bg-transparent add-field-btn text-primary mt-2" @click="addOption('Column')">Add Column</button>
+            <button   class=" border-0 bg-transparent add-field-btn text-primary mt-2" @click="addOption('Column',componentIndex)">Add Column</button>
           </div>
         </div>
       </div>
@@ -224,13 +224,14 @@
       <div class="row">
         <div class="col-lg-12 d-flex justify-content-end">
           <div class="me-3 btn-icon">
-            <button class="border-0 bg-transparent"><i class="fa-regular fa-copy"></i></button>
+            <button class="border-0 bg-transparent" @click="duplicateComponent(componentIndex)"><i class="fa-regular fa-copy"></i></button>
           </div>
           <div class="me-3 btn-icon">
             <button class="border-0 bg-transparent"><i class="fa-regular fa-trash-can "></i></button>
           </div>
           <div class="d-flex align-items-center border-start border-3">
-            <label class="form-check-label me-2 ms-3" for="flexSwitchCheckDefault">Required</label>
+            <label class="form-check-label me-2 ms-3" for="flexSwitchCheckDefault">Required <p>{{ componentIndex }}</p></label>
+
             <div class="form-check form-switch">
               <input class="form-check-input custom-switch" type="checkbox" role="switch" id="flexSwitchCheckDefault">
             </div>
@@ -252,34 +253,40 @@ export default {
     Tiptap,
   },
   computed: {
-    ...mapState(formStore, ['selectedValue','selectedInput','multipleChoiceOption','count','regularOptions','rowOptions','columnOptions','addOtherBtn','fileOptions','dropdowns','fileTypes','optionValues']),
+    ...mapState(formStore, ['compId','selectedValue','selectedInput','containerMultipleChoiceOption','count','regularOptions','rowOptions','columnOptions','addOtherBtn','fileOptions','dropdowns','fileTypes','optionValues']),
   },
 
   data() {
     return {
+      triggerWatcher:0
     };
+  },
+  props: {
+    componentIndex: {
+      type: Number,
+    },
   },
   // watch the select box changes 
   watch: {
     selectedValue(newVal) {
       const selectedOption = this.optionValues.find(option => option.value === newVal);
       if (selectedOption) {
-        this.selectedInput = selectedOption.inputType;
-        this.resetOptionIdsAndLabels()
+        this.selectedInput = selectedOption.inputType; 
+        this.resetOptionIdsAndLabels(this.$props.componentIndex)
       }
     },
   },
   methods: {
-    ...mapActions(formStore, ['updateSelectedValue','addOption','removeOption','resetOptionIdsAndLabels','getSelectedPlaceholder','chooseFileTypes','handleDropdowns']),
+    ...mapActions(formStore, ['intiCompId','updateSelectedValue','addOption','removeOption','resetOptionIdsAndLabels','getSelectedPlaceholder','chooseFileTypes','handleDropdowns','duplicateComponent']),
+    
+    
   },
   
   beforeMount(){
    
   },
   mounted(){
-    this.rowOptions = ["",]
-    this.regularOptions =["",]
-    this.columnOptions = ["",]
+    this.intiCompId(this.$props.componentIndex)
   },
  
 };
@@ -354,4 +361,3 @@ export default {
   }
 
 </style>
-@/stores/formStore

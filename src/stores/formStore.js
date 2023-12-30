@@ -1,14 +1,16 @@
 import { defineStore } from 'pinia'
 
+
 export const formStore = defineStore('formStore', {
   state: () => ({
       selectedValue: 'Multiple Choice',
       selectedInput: 'radio',
-      multipleChoiceOption : [{id:1, placeholder: `Option`, image: null ,label:1 },{id:2, placeholder: `Row`, image: null },{id:3, placeholder: `Column`, image: null }],
+      // multipleChoiceOption : [{id:1, placeholder: `Option`, image: null ,label:1 },{id:2, placeholder: `Row`, image: null },{id:3, placeholder: `Column`, image: null }],
+      containerMultipleChoiceOption: [[{id:1, placeholder: `Option`, image: null ,label:1 },{id:2, placeholder: `Row`, image: null },{id:3, placeholder: `Column`, image: null }]] ,
       count : 1,
-      regularOptions : [],
-      rowOptions : [],
-      columnOptions : [],
+      regularOptions : [""],
+      rowOptions : [""],
+      columnOptions : [""],
       
       // checkbox 
       // flag to change others button
@@ -34,9 +36,16 @@ export const formStore = defineStore('formStore', {
       },
       // switch flag file upload
       fileTypes : false,
+
+      // component id 
+      compId : "",
+     
+     
   }),
   getters: {
-    doubleCount: (state) => state.count * 2,
+    getCompId(){
+      return this.compId
+    },
     optionValues() {
       return [
         { value: 'Short Answer', label: 'Short Answer', inputType: 'text', placeholder : "Short Answer Text" , icon:'<svg   xmlns="http://www.w3.org/2000/svg"  width="24" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.--><path opacity="1" fill="#1E3050" d="M32 288c-17.7 0-32 14.3-32 32s14.3 32 32 32l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L32 288zm0-128c-17.7 0-32 14.3-32 32s14.3 32 32 32l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L32 160z"/></svg>' },
@@ -55,49 +64,63 @@ export const formStore = defineStore('formStore', {
   },
   actions: {
    
-      updateSelectedValue(value) {
-        this.selectedValue = value;
-      },
-  
+    intiCompId(param){
+      this.compId = param
+    },
+
+    duplicateComponent(componentIndex) {
+      if (componentIndex >= 0 && componentIndex < this.containerMultipleChoiceOption.length) {
+        const duplicatedArray = [...this.containerMultipleChoiceOption[componentIndex]];
+        this.containerMultipleChoiceOption.splice(componentIndex + 1, 0, duplicatedArray);
+      }
+    },
+
       //  Add Option to multiple Choices & CheckBox & Dropdown 
-      addOption(optionName) {
+      addOption(optionName,componentId) {
         this.count++
-          this.multipleChoiceOption.push({ id: this.count,  placeholder: optionName, image: null });
+          this.containerMultipleChoiceOption[componentId].push({ id: this.count,  placeholder: optionName, image: null });
           if (optionName === "others") {
             this.addOtherBtn = !this.addOtherBtn;
           }
-        console.log(this.multipleChoiceOption);
-        this.resetOptionIdsAndLabels()
+          // console.log(this.containerMultipleChoiceOption[0]);
+          console.log(componentId);
+          this.resetOptionIdsAndLabels(componentId)
+      },
+
+      updateSelectedValue(value,componentId) {
+        if (componentId == this.getCompId) {
+          this.selectedValue = value;
+        }
       },
   
       //  Remove Option From multiple Choices & CheckBox & Dropdown 
-      removeOption(id){
-        const indexToRemove = this.multipleChoiceOption.findIndex(option => option.id === id);
+      removeOption(id,componentId){
+        const indexToRemove = this.containerMultipleChoiceOption[componentId].findIndex(option => option.id === id);
   
     if (indexToRemove !== -1) {
-      const removedOption = this.multipleChoiceOption[indexToRemove];
+      const removedOption = this.containerMultipleChoiceOption[componentId][indexToRemove];
   
       // Remove the option using splice
-      this.multipleChoiceOption.splice(indexToRemove, 1);
+      this.containerMultipleChoiceOption[componentId].splice(indexToRemove, 1);
   
       // Check if the removed option is the "others" placeholder
       if (removedOption.placeholder === "others") {
         this.addOtherBtn = true;
       }
       }
-      this.resetOptionIdsAndLabels();
+      this.resetOptionIdsAndLabels(componentId);
     },
   
     // Make The Options Ordered
-    resetOptionIdsAndLabels() {
+    resetOptionIdsAndLabels(componentId) {
   
-  const otherOption = this.multipleChoiceOption.find(option => option.placeholder === "others");
-  const regularOptions = this.multipleChoiceOption.filter(option => option.placeholder === "Option");
-  const rowOptions = this.multipleChoiceOption.filter(option => option.placeholder === "Row");
-  const columnOptions = this.multipleChoiceOption.filter(option => option.placeholder === "Column");
+  const otherOption = this.containerMultipleChoiceOption[componentId].find(option => option.placeholder === "others");
+  const regularOptions = this.containerMultipleChoiceOption[componentId].filter(option => option.placeholder === "Option");
+  const rowOptions = this.containerMultipleChoiceOption[componentId].filter(option => option.placeholder === "Row");
+  const columnOptions = this.containerMultipleChoiceOption[componentId].filter(option => option.placeholder === "Column");
   
   if (otherOption) {
-    const nonOtherOptions = this.multipleChoiceOption.filter(option => option.placeholder !== "others");
+    const nonOtherOptions = this.containerMultipleChoiceOption[componentId].filter(option => option.placeholder !== "others");
     const updatedOptions = [...nonOtherOptions, otherOption];
     let optionCounter = 0;
     let rowCounter = 0;
@@ -129,13 +152,13 @@ export const formStore = defineStore('formStore', {
                   this.addOtherBtn = true;
               }
           }
-    this.multipleChoiceOption = updatedOptions;
+    this.containerMultipleChoiceOption[componentId] = updatedOptions;
   }else {
           let optionCounter = 0;
           let rowCounter = 0;
           let columnsCounter = 0;
   
-          this.multipleChoiceOption.forEach((option, index) => {
+          this.containerMultipleChoiceOption[componentId].forEach((option, index) => {
               if (option.placeholder === 'Option') {
                   option.id = index + 1;
                   option.label = ++optionCounter;
@@ -151,14 +174,12 @@ export const formStore = defineStore('formStore', {
                   option.label = ++columnsCounter;
                   option.placeholder = 'Column';
               }
-              console.log(option.placeholder);
           });
       }
   
       this.rowOptions = rowOptions;
       this.regularOptions = regularOptions;
       this.columnOptions = columnOptions;
-  
   
   },
   
