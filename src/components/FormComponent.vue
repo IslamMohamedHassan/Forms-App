@@ -14,7 +14,7 @@
         <div class="col-lg-3 h-50px">
           <div class="dropdown w-100">
             <button class="btn btn-primary dropdown-toggle w-100" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              {{ selectedValue }}
+              {{ containerMultipleChoiceOption[componentIndex].selectedValue }}
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
               <li style="cursor:pointer" v-for="option in optionValues" :key="option.value">
@@ -28,17 +28,17 @@
         </div>
       </div>
       <!-- Start row of multi choice and multi Checkboxes -->
-      <div class="row align-items-center" v-if="selectedValue === 'Multiple Choice' || selectedValue == 'Checkboxes' || selectedValue == 'Dropdown'">
+      <div class="row align-items-center" v-if="containerMultipleChoiceOption[componentIndex].selectedValue === 'Multiple Choice' || containerMultipleChoiceOption[componentIndex].selectedValue == 'Checkboxes' || containerMultipleChoiceOption[componentIndex].selectedValue == 'Dropdown'">
         <div  v-for="(option,i) in  containerMultipleChoiceOption[componentIndex][0].data" :key="i" >
           <div class="d-flex align-items-center justify-content-between" v-if="option.placeholder !== 'Row' && option.placeholder !== 'Column'">
           <div>
-            <input v-if="selectedValue === 'Multiple Choice'" :type="selectedInput"  class="form-check-input custom-radio"  disabled>
-            <input v-if="selectedValue === 'Checkboxes'" type="checkbox"  class="form-check-input custom-radio"  disabled> 
+            <input v-if="containerMultipleChoiceOption[componentIndex].selectedValue === 'Multiple Choice'" :type="containerMultipleChoiceOption[componentIndex].selectedInput"  class="form-check-input custom-radio"  disabled>
+            <input v-if="containerMultipleChoiceOption[componentIndex].selectedValue === 'Checkboxes'" type="checkbox"  class="form-check-input custom-radio"  disabled> 
           </div>
           <div class="w-100">
             <input type="text" class="answer-title w-100"  :placeholder="(option.placeholder ==='Option') ? option.placeholder  + ' '+ option.label : option.placeholder">
           </div>
-          <div v-if="option.placeholder !== 'others' && selectedValue !== 'Dropdown'" class="image-label ms-3">
+          <div v-if="option.placeholder !== 'others' && containerMultipleChoiceOption[componentIndex].selectedValue !== 'Dropdown'" class="image-label ms-3">
             <label for="up-img"><i class="fa fa-image"></i></label>
             <input style="display: none;" type="file" id="up-img">
           </div>
@@ -50,26 +50,26 @@
         <div class="col-12 py-3">
           <button class=" border-0 bg-transparent add-field-btn" @click="addOption('Option',componentIndex)">Add Option</button>
           <span v-if="containerMultipleChoiceOption[componentIndex].addOtherBtn
-          && selectedValue !== 'Dropdown'
-          "> or {{ containerMultipleChoiceOption[componentIndex].addOtherBtn }}</span>
+          && containerMultipleChoiceOption[componentIndex].selectedValue !== 'Dropdown'
+          "> or </span>
           <button v-if="containerMultipleChoiceOption[componentIndex].addOtherBtn 
-          && selectedValue !== 'Dropdown'
-          "  :class="`border-0 bg-transparent add-field-btn text-primary ${!containerMultipleChoiceOption.addOtherBtn? 'd-none':''}`" @click="addOption('others',componentIndex)">Add "Other"</button>
+          && containerMultipleChoiceOption[componentIndex].selectedValue !== 'Dropdown'
+          "  :class="`border-0 bg-transparent add-field-btn text-primary ${!containerMultipleChoiceOption[componentIndex].addOtherBtn? 'd-none':''}`" @click="addOption('others',componentIndex)">Add "Other"</button>
         </div>
        
-      </div>
+      </div> 
       <!-- End row of multi choice and multi Checkboxes -->
 
-       <!-- Start row of Short Answer & Paragraph & Date & Time -->
-      <div class="row align-items-center" v-if="selectedValue === 'Short Answer' || selectedValue === 'Paragraph' || selectedValue === 'Date' || selectedValue === 'Time'">
+      <!--  Start row of Short Answer & Paragraph & Date & Time -->
+      <div class="row align-items-center" v-if="containerMultipleChoiceOption[componentIndex].selectedValue === 'Short Answer' || containerMultipleChoiceOption[componentIndex].selectedValue === 'Paragraph' || containerMultipleChoiceOption[componentIndex].selectedValue === 'Date' || containerMultipleChoiceOption[componentIndex].selectedValue === 'Time'">
         <div>          
-          <input :type="selectedInput" :placeholder="getSelectedPlaceholder(selectedValue)" disabled class="form-control">
+          <input :placeholder="getSelectedPlaceholder(containerMultipleChoiceOption[componentIndex].selectedValue)" :type="containerMultipleChoiceOption[componentIndex].selectedInput" disabled class="form-control">
         </div>
       </div>
       <!-- Start row of Short Answer & Paragraph & Date & Time -->
 
       <!-- Start FileUpload Row  -->
-      <div  v-if="selectedValue === 'File Upload'">
+     <div  v-if="containerMultipleChoiceOption[componentIndex].selectedValue === 'File Upload'">
         <div class="row align-items-center">
           <div class="col-lg-6 d-flex align-items-center justify-content-between">
               <p class="pt-3 w-75">Allow only specific file types</p>
@@ -139,7 +139,7 @@
       <!-- End FileUpload Row  -->
 
       <!-- Start linear scale Row-->
-      <div class="mt-3"  v-if="selectedValue === 'Linear Scale'">
+      <div class="mt-3"  v-if="containerMultipleChoiceOption[componentIndex].selectedValue === 'Linear Scale'">
         <div class="row align-items-center justify-content-start">
           <div class="dropdown col-1">
               <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -184,7 +184,7 @@
       <!-- End linear scale Row-->
 
       <!-- Start Multiple Choice Grid Row-->
-      <div class="mt-3 row"  v-if="selectedValue === 'Multiple Choice Grid' || selectedValue === 'Checkbox Grid'">
+      <div class="mt-3 row"  v-if="containerMultipleChoiceOption[componentIndex].selectedValue === 'Multiple Choice Grid' || containerMultipleChoiceOption[componentIndex].selectedValue === 'Checkbox Grid'">
         <div class="col-lg-6">
           <h6>Rows</h6>
           <div  v-for="(option,i) in  containerMultipleChoiceOption[componentIndex][0].data" :key="i">
@@ -205,8 +205,8 @@
           <h6>Columns</h6>
           <div  v-for="(option,i) in  containerMultipleChoiceOption[componentIndex][0].data" :key="i">
             <div class="d-flex align-items-center" v-if="option.placeholder == 'Column'">
-              <input v-if="selectedValue === 'Multiple Choice Grid'"  class=" form-check-input custom-radio me-2" type="radio" disabled>
-              <input v-if="selectedValue === 'Checkbox Grid'"  class=" form-check-input custom-radio me-2" type="checkbox" disabled>
+              <input v-if="containerMultipleChoiceOption[componentIndex].selectedValue === 'Multiple Choice Grid'"  class=" form-check-input custom-radio me-2" type="radio" disabled>
+              <input v-if="containerMultipleChoiceOption[componentIndex].selectedValue === 'Checkbox Grid'"  class=" form-check-input custom-radio me-2" type="checkbox" disabled>
               <input   class="border-0" type="text" :placeholder="option.placeholder + ' ' + option.label">
               <button  
                 v-if="columnOptions.length !== 1"
@@ -231,7 +231,7 @@
             <button class="border-0 bg-transparent" @click="duplicateComponent(componentIndex)"><i class="fa-regular fa-copy"></i></button>
           </div>
           <div class="me-3 btn-icon">
-            <button class="border-0 bg-transparent"><i class="fa-regular fa-trash-can "></i></button>
+            <button class="border-0 bg-transparent" @click="removeComponent(componentIndex)"><i class="fa-regular fa-trash-can "></i></button>
           </div>
           <div class="d-flex align-items-center border-start border-3">
             <label class="form-check-label me-2 ms-3" for="flexSwitchCheckDefault">Required <p>{{ componentIndex }}</p></label>
@@ -257,7 +257,7 @@ export default {
     Tiptap,
   },
   computed: {
-    ...mapState(formStore, ['compId','selectedValue','selectedInput','containerMultipleChoiceOption','count','regularOptions','rowOptions','columnOptions','fileOptions','dropdowns','fileTypes','optionValues']),
+    ...mapState(formStore, ['compId','containerMultipleChoiceOption','count','regularOptions','rowOptions','columnOptions','fileOptions','dropdowns','fileTypes','optionValues']),
   },
 
   data() {
@@ -269,19 +269,22 @@ export default {
     componentIndex: {
       type: Number,
     },
+    data: {
+      type: Array,
+    },
   },
   // watch the select box changes 
   watch: {
-    selectedValue(newVal) {
-      const selectedOption = this.optionValues.find(option => option.value === newVal);
-      if (selectedOption) {
-        this.selectedInput = selectedOption.inputType; 
-        this.resetOptionIdsAndLabels(this.componentIndex)
-      }
-    },
+    // selectedValue(newVal) {
+    //   const selectedOption = this.optionValues.find(option => option.value === newVal);
+    //   if (selectedOption) {
+    //     this.selectedInput = selectedOption.inputType; 
+    //     this.resetOptionIdsAndLabels(this.componentIndex)
+    //   }
+    // },
   },
   methods: {
-    ...mapActions(formStore, ['intiCompId','updateSelectedValue','addOption','removeOption','resetOptionIdsAndLabels','getSelectedPlaceholder','chooseFileTypes','handleDropdowns','duplicateComponent']),
+    ...mapActions(formStore, ['removeComponent','intiCompId','updateSelectedValue','addOption','removeOption','resetOptionIdsAndLabels','getSelectedPlaceholder','chooseFileTypes','handleDropdowns','duplicateComponent']),
     
     
   },
@@ -289,17 +292,32 @@ export default {
   beforeMount(){
     if (this.componentIndex !== 0) {
       this.containerMultipleChoiceOption[this.componentIndex].addOtherBtn = this.containerMultipleChoiceOption[this.componentIndex - 1].addOtherBtn
+      this.containerMultipleChoiceOption[this.componentIndex].selectedValue = this.containerMultipleChoiceOption[this.componentIndex - 1].selectedValue
     }
-  },
+
+    if (this.containerMultipleChoiceOption[this.componentIndex].selectedValue === undefined && this.componentIndex == 0){
+      this.containerMultipleChoiceOption[this.componentIndex].selectedValue = "Multiple Choice"
+    }
+    if (this.containerMultipleChoiceOption[this.componentIndex].selectedInput === undefined && this.componentIndex == 0){
+      this.containerMultipleChoiceOption[this.componentIndex].selectedInput = "radio"
+    }
+
+    },
   mounted(){
     this.intiCompId(this.$props.componentIndex)
-    console.log(this.containerMultipleChoiceOption[this.componentIndex].data);
+    console.log(this.containerMultipleChoiceOption[this.componentIndex].addOtherBtn);
+    
+
     
     // console.log(this.containerMultipleChoiceOption[this.componentIndex].find(o => o.addOtherBtn).addOtherBtn);
     if (this.componentIndex === 0) {
       this.containerMultipleChoiceOption[this.componentIndex].addOtherBtn = true
     }
   },
+  updated(){
+    console.log(this.getSelectedPlaceholder(this.containerMultipleChoiceOption[this.componentIndex].selectedInput));
+    console.log(this.getSelectedPlaceholder(this.containerMultipleChoiceOption[this.componentIndex].selectedValue));
+  }
  
 };
 </script>

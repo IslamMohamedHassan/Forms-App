@@ -19,8 +19,7 @@ export default{
 <template>
    <div>
     <div v-for="(data,i) in containerMultipleChoiceOption" :key="i">
-      <!-- Use the FormComponent template with the data from containerMultipleChoiceOption -->
-      <FormComponent :componentIndex="i" />
+      <FormComponent :componentIndex="i" :data="data" />
     </div>
   </div>
 </template>

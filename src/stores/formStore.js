@@ -1,16 +1,19 @@
 import { defineStore } from 'pinia'
+import { v4 as uuidv4 } from "uuid";
 
 
 export const formStore = defineStore('formStore', {
   state: () => ({
     // select box  initial data
-      selectedValue: 'Multiple Choice',
-      selectedInput: 'radio',
+      // selectedValue: 'Multiple Choice',
+      // selectedInput: 'radio',
     // component data
       containerMultipleChoiceOption: [[
         { data : [{ id:1 , placeholder: `Option`, image: null ,label:1 },{id:2, placeholder: `Row`, image: null },{id:3, placeholder: `Column`, image: null },]},
       // flag to display other button
-      {addOtherBtn : true} ]] ,
+      {addOtherBtn : true},
+      {selectedValue : 'Multiple Choice'},
+      {selectedInput: 'radio'}]] ,
       // end component data
       // id counter
       count : 1,
@@ -67,13 +70,16 @@ export const formStore = defineStore('formStore', {
         { value: 'File Upload', label: 'File Upload', inputType: 'file',placeholder : "",icon: '<svg xmlns="http://www.w3.org/2000/svg"  width="24" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.--><path opacity="1" fill="#1E3050" d="M288 109.3V352c0 17.7-14.3 32-32 32s-32-14.3-32-32V109.3l-73.4 73.4c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l128-128c12.5-12.5 32.8-12.5 45.3 0l128 128c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L288 109.3zM64 352H192c0 35.3 28.7 64 64 64s64-28.7 64-64H448c35.3 0 64 28.7 64 64v32c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V416c0-35.3 28.7-64 64-64zM432 456a24 24 0 1 0 0-48 24 24 0 1 0 0 48z"/></svg>' },
         { value: 'Linear Scale', label: 'Linear Scale', inputType: 'text',placeholder : "",icon: '<svg xmlns="http://www.w3.org/2000/svg"  width="24" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.--><path opacity="1" fill="#1E3050" d="M8 256a56 56 0 1 1 112 0A56 56 0 1 1 8 256zm160 0a56 56 0 1 1 112 0 56 56 0 1 1 -112 0zm216-56a56 56 0 1 1 0 112 56 56 0 1 1 0-112z"/></svg>' },
         { value: 'Multiple Choice Grid', label: 'Multiple Choice Grid', inputType: 'text',placeholder : "",icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.--><path opacity="1" fill="#1E3050" d="M128 136c0-22.1-17.9-40-40-40L40 96C17.9 96 0 113.9 0 136l0 48c0 22.1 17.9 40 40 40H88c22.1 0 40-17.9 40-40l0-48zm0 192c0-22.1-17.9-40-40-40H40c-22.1 0-40 17.9-40 40l0 48c0 22.1 17.9 40 40 40H88c22.1 0 40-17.9 40-40V328zm32-192v48c0 22.1 17.9 40 40 40h48c22.1 0 40-17.9 40-40V136c0-22.1-17.9-40-40-40l-48 0c-22.1 0-40 17.9-40 40zM288 328c0-22.1-17.9-40-40-40H200c-22.1 0-40 17.9-40 40l0 48c0 22.1 17.9 40 40 40h48c22.1 0 40-17.9 40-40V328zm32-192v48c0 22.1 17.9 40 40 40h48c22.1 0 40-17.9 40-40V136c0-22.1-17.9-40-40-40l-48 0c-22.1 0-40 17.9-40 40zM448 328c0-22.1-17.9-40-40-40H360c-22.1 0-40 17.9-40 40v48c0 22.1 17.9 40 40 40h48c22.1 0 40-17.9 40-40V328z"/></svg>' },
-        { value: 'Checkbox Grid', label: 'Checkbox Grid', inputType: 'text',placeholder : "",icon: '<svg xmlns="http://www.w3.org/2000/svg"  width="24" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.--><path opacity="1" fill="#1E3050" d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zm88 64v64H64V96h88zm56 0h88v64H208V96zm240 0v64H360V96h88zM64 224h88v64H64V224zm232 0v64H208V224h88zm64 0h88v64H360V224zM152 352v64H64V352h88zm56 0h88v64H208V352zm240 0v64H360V352h88z"/></svg>' },
-        { value: 'Date', label: 'Date', inputType: 'date',icon: '<svg xmlns="http://www.w3.org/2000/svg"  width="24" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.--><path d="M152 24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H64C28.7 64 0 92.7 0 128v16 48V448c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V192 144 128c0-35.3-28.7-64-64-64H344V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H152V24zM48 192H400V448c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V192z"/></svg>' },
-        { value: 'Time', label: 'Time', inputType: 'time',icon: '<svg xmlns="http://www.w3.org/2000/svg"  width="24" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.--><path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"/></svg>' },
+        { value: 'Checkbox Grid', label: 'Checkbox Grid', inputType:'text',placeholder : "",icon: '<svg xmlns="http://www.w3.org/2000/svg"  width="24" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.--><path opacity="1" fill="#1E3050" d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zm88 64v64H64V96h88zm56 0h88v64H208V96zm240 0v64H360V96h88zM64 224h88v64H64V224zm232 0v64H208V224h88zm64 0h88v64H360V224zM152 352v64H64V352h88zm56 0h88v64H208V352zm240 0v64H360V352h88z"/></svg>' },
+        { value: 'Date', label: 'Date', inputType: 'date' ,icon: '<svg xmlns="http://www.w3.org/2000/svg"  width="24" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.--><path d="M152 24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H64C28.7 64 0 92.7 0 128v16 48V448c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V192 144 128c0-35.3-28.7-64-64-64H344V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H152V24zM48 192H400V448c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V192z"/></svg>' },
+        { value: 'Time', label: 'Time', inputType: 'time' ,icon: '<svg xmlns="http://www.w3.org/2000/svg"  width="24" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.--><path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"/></svg>' },
       ];
     },
-  },
+  }, 
   actions: {
+    generateUniqueId() {
+      return uuidv4();
+    },
    
   // function to pass the comp id from th component to store 
 
@@ -85,17 +91,26 @@ export const formStore = defineStore('formStore', {
     duplicateComponent(componentIndex) {
 
       if (componentIndex >= 0 && componentIndex < this.containerMultipleChoiceOption.length) {
-        const duplicatedArray = [...this.containerMultipleChoiceOption[componentIndex]];
-        this.containerMultipleChoiceOption.splice(componentIndex + 1, 0, duplicatedArray);
-        
+        const duplicatedArray = JSON.parse(JSON.stringify(this.containerMultipleChoiceOption[componentIndex]));
+        this.containerMultipleChoiceOption.splice(componentIndex + 1, 0, duplicatedArray); 
+      }
+      
+    },
+    removeComponent(componentIndex) {
+      if (this.containerMultipleChoiceOption[componentIndex]) {
+        this.containerMultipleChoiceOption.splice(componentIndex, 1);
+
       }
     },
 
       //  Add Option to multiple Choices & CheckBox & Dropdown 
       addOption(optionName,componentId) {
+        console.log(componentId);
+        console.log(this.containerMultipleChoiceOption[componentId]);
         this.count++
           this.containerMultipleChoiceOption[componentId][0].data.push({ id: this.count,  placeholder: optionName, image: null });
           if (optionName === "others") {
+
             this.containerMultipleChoiceOption[componentId].addOtherBtn = !this.containerMultipleChoiceOption[componentId].addOtherBtn
             console.log(this.containerMultipleChoiceOption[componentId].addOtherBtn);
             console.log('from add option', this.containerMultipleChoiceOption[componentId]);
@@ -106,16 +121,16 @@ export const formStore = defineStore('formStore', {
 
       // fun to change select box values
       updateSelectedValue(value,componentId) {
-        if (componentId == this.getCompId) {
-          this.selectedValue = value;
-        }
+        this.containerMultipleChoiceOption[componentId].selectedValue = value;
+          // this.selectedValue = value;
+        
       },
   
       //  Remove Option From multiple Choices & CheckBox & Dropdown 
       removeOption(id,componentId){
 
         const indexToRemove = this.containerMultipleChoiceOption[componentId][0].data.findIndex(option => option.id === id);
-        
+
         console.log(indexToRemove);
     if (indexToRemove !== -1) {
       const removedOption = this.containerMultipleChoiceOption[componentId][0].data[indexToRemove];
@@ -166,7 +181,7 @@ export const formStore = defineStore('formStore', {
           otherOption.id = updatedOptions.length + 1;
           otherOption.placeholder = 'others';
   
-          if (this.selectedValue === "Dropdown") {
+          if (this.containerMultipleChoiceOption[componentId].selectedValue === "Dropdown") {
               const otherIndex = updatedOptions.findIndex(option => option.placeholder === "others");
               if (otherIndex !== -1) {
                   updatedOptions[otherIndex].placeholder = "Option";
@@ -207,6 +222,8 @@ export const formStore = defineStore('formStore', {
   
   // change the placeholder od Fields when change the select box 
       getSelectedPlaceholder(selectedValue){
+
+        console.log(selectedValue);
        const selectedOption = this.optionValues.find(option => option.value === selectedValue);
         console.log(selectedOption);
       return selectedOption ? selectedOption.placeholder : '';
