@@ -29,7 +29,7 @@
       </div>
       <!-- Start row of multi choice and multi Checkboxes -->
       <div class="row align-items-center" v-if="selectedValue === 'Multiple Choice' || selectedValue == 'Checkboxes' || selectedValue == 'Dropdown'">
-        <div  v-for="(option,i) in  containerMultipleChoiceOption[componentIndex]" :key="i" >
+        <div  v-for="(option,i) in  containerMultipleChoiceOption[componentIndex][0].data" :key="i" >
           <div class="d-flex align-items-center justify-content-between" v-if="option.placeholder !== 'Row' && option.placeholder !== 'Column'">
           <div>
             <input v-if="selectedValue === 'Multiple Choice'" :type="selectedInput"  class="form-check-input custom-radio"  disabled>
@@ -49,8 +49,12 @@
         </div>
         <div class="col-12 py-3">
           <button class=" border-0 bg-transparent add-field-btn" @click="addOption('Option',componentIndex)">Add Option</button>
-          <span v-if="addOtherBtn && selectedValue !== 'Dropdown'"> or</span>
-          <button v-if="addOtherBtn && selectedValue !== 'Dropdown'"  :class="`border-0 bg-transparent add-field-btn text-primary ${!addOtherBtn? 'd-none':''}`" @click="addOption('others',componentIndex)">Add "Other"</button>
+          <span v-if="containerMultipleChoiceOption[componentIndex].addOtherBtn
+          && selectedValue !== 'Dropdown'
+          "> or {{ containerMultipleChoiceOption[componentIndex].addOtherBtn }}</span>
+          <button v-if="containerMultipleChoiceOption[componentIndex].addOtherBtn 
+          && selectedValue !== 'Dropdown'
+          "  :class="`border-0 bg-transparent add-field-btn text-primary ${!containerMultipleChoiceOption.addOtherBtn? 'd-none':''}`" @click="addOption('others',componentIndex)">Add "Other"</button>
         </div>
        
       </div>
@@ -183,7 +187,7 @@
       <div class="mt-3 row"  v-if="selectedValue === 'Multiple Choice Grid' || selectedValue === 'Checkbox Grid'">
         <div class="col-lg-6">
           <h6>Rows</h6>
-          <div  v-for="(option,i) in  containerMultipleChoiceOption[componentIndex]" :key="i">
+          <div  v-for="(option,i) in  containerMultipleChoiceOption[componentIndex][0].data" :key="i">
             <div v-if="option.placeholder == 'Row'">
               <label  class="me-1" for="">{{ option.label }} . </label>
               <input  class="border-0" type="text" :placeholder="option.placeholder + ' ' + option.label">
@@ -199,7 +203,7 @@
         </div>
         <div class="col-lg-6">
           <h6>Columns</h6>
-          <div  v-for="(option,i) in  containerMultipleChoiceOption[componentIndex]" :key="i">
+          <div  v-for="(option,i) in  containerMultipleChoiceOption[componentIndex][0].data" :key="i">
             <div class="d-flex align-items-center" v-if="option.placeholder == 'Column'">
               <input v-if="selectedValue === 'Multiple Choice Grid'"  class=" form-check-input custom-radio me-2" type="radio" disabled>
               <input v-if="selectedValue === 'Checkbox Grid'"  class=" form-check-input custom-radio me-2" type="checkbox" disabled>
@@ -253,7 +257,7 @@ export default {
     Tiptap,
   },
   computed: {
-    ...mapState(formStore, ['compId','selectedValue','selectedInput','containerMultipleChoiceOption','count','regularOptions','rowOptions','columnOptions','addOtherBtn','fileOptions','dropdowns','fileTypes','optionValues']),
+    ...mapState(formStore, ['compId','selectedValue','selectedInput','containerMultipleChoiceOption','count','regularOptions','rowOptions','columnOptions','fileOptions','dropdowns','fileTypes','optionValues']),
   },
 
   data() {
@@ -272,7 +276,7 @@ export default {
       const selectedOption = this.optionValues.find(option => option.value === newVal);
       if (selectedOption) {
         this.selectedInput = selectedOption.inputType; 
-        this.resetOptionIdsAndLabels(this.$props.componentIndex)
+        this.resetOptionIdsAndLabels(this.componentIndex)
       }
     },
   },
@@ -283,10 +287,18 @@ export default {
   },
   
   beforeMount(){
-   
+    if (this.componentIndex !== 0) {
+      this.containerMultipleChoiceOption[this.componentIndex].addOtherBtn = this.containerMultipleChoiceOption[this.componentIndex - 1].addOtherBtn
+    }
   },
   mounted(){
     this.intiCompId(this.$props.componentIndex)
+    console.log(this.containerMultipleChoiceOption[this.componentIndex].data);
+    
+    // console.log(this.containerMultipleChoiceOption[this.componentIndex].find(o => o.addOtherBtn).addOtherBtn);
+    if (this.componentIndex === 0) {
+      this.containerMultipleChoiceOption[this.componentIndex].addOtherBtn = true
+    }
   },
  
 };
