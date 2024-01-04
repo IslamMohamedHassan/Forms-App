@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import { v4 as uuidv4 } from "uuid";
 
 
 export const formStore = defineStore('formStore', {
@@ -8,20 +7,21 @@ export const formStore = defineStore('formStore', {
       // selectedValue: 'Multiple Choice',
       // selectedInput: 'radio',
     // component data
-      containerMultipleChoiceOption: [[
-        { data : [{ id:1 , placeholder: `Option`, image: null ,label:1 },{id:2, placeholder: `Row`, image: null },{id:3, placeholder: `Column`, image: null },]},
+      containerMultipleChoiceOption: [{
+         data : [{ id:1 , placeholder: `Option`, image: null ,label:1 , value:'' },{id:2, placeholder: `Row`, image: null , value:'' },{id:3, placeholder: `Column`, image: null , value:'' },],
       // flag to display other button
-      {addOtherBtn : true},
-      {selectedValue : 'Multiple Choice'},
-      {selectedInput: 'radio'}]] ,
+      addOtherBtn : true,
+      selectedValue : 'Multiple Choice',
+      selectedInput: 'radio',
+      regularOptions : [""],
+      rowOptions : [""],
+      columnOptions : [""],}] ,
       // end component data
       // id counter
       count : 1,
 
       // these to filter all option and i use it to  hide the remove btn if i have 1 option 
-      regularOptions : [""],
-      rowOptions : [""],
-      columnOptions : [""],
+     
       
      
       
@@ -55,10 +55,14 @@ export const formStore = defineStore('formStore', {
   }),
   getters: {
 
-    //  computed to get the CompId from component
-    getCompId(){
-      return this.compId
+  
+    
+    getContainerMultipleChoiceOption(state) {
+      return state.containerMultipleChoiceOption;
     },
+
+    //  computed to get the CompId from component
+   
 
     optionValues() {
       return [
@@ -77,44 +81,63 @@ export const formStore = defineStore('formStore', {
     },
   }, 
   actions: {
-    generateUniqueId() {
-      return uuidv4();
-    },
    
-  // function to pass the comp id from th component to store 
+    updateContainerMultipleChoiceOrder(newIndex, oldIndex) {
+    // Update the order in the state
+    const movedComponent = this.containerMultipleChoiceOption[oldIndex];
+    this.containerMultipleChoiceOption.splice(oldIndex, 1);
+    this.containerMultipleChoiceOption.splice(newIndex, 0, movedComponent);
+      console.log(this.containerMultipleChoiceOption);
+  },
+  
 
-    intiCompId(param){
-      this.compId = param
-    },
+  removeComponent(index) {
+    // Remove the component at the specified index
+    if (index >= 0 && index < this.containerMultipleChoiceOption.length) {
+      this.containerMultipleChoiceOption.splice(index, 1);
+    }
+  },
 
-  // fun to duplicate comp 
-    duplicateComponent(componentIndex) {
+  addComponent() {
+    this.containerMultipleChoiceOption.push({
+      data : [{ id: this.getContainerMultipleChoiceOption.length + 1 , placeholder: `Option`, image: null ,label:1 , value:'' },{id:2, placeholder: `Row`, image: null , value:'' },{id:3, placeholder: `Column`, image: null , value:'' },],
+   // flag to display other button
+   addOtherBtn : true,
+   selectedValue : 'Multiple Choice',
+   selectedInput: 'radio',
+   regularOptions : [""],
+   rowOptions : [""],
+   columnOptions : [""],})
+  },
 
-      if (componentIndex >= 0 && componentIndex < this.containerMultipleChoiceOption.length) {
-        const duplicatedArray = JSON.parse(JSON.stringify(this.containerMultipleChoiceOption[componentIndex]));
-        this.containerMultipleChoiceOption.splice(componentIndex + 1, 0, duplicatedArray); 
-      }
-      
-    },
-    removeComponent(componentIndex) {
-      if (this.containerMultipleChoiceOption[componentIndex]) {
-        this.containerMultipleChoiceOption.splice(componentIndex, 1);
+//  function to pass the comp id from th component to store 
+duplicateComponent(originalIndex) {
+  if (originalIndex >= 0 && originalIndex < this.containerMultipleChoiceOption.length) {
+    // Duplicate the component
+    const originalComponent = this.containerMultipleChoiceOption[originalIndex];
+    const duplicatedArray = JSON.parse(JSON.stringify(originalComponent));
 
-      }
-    },
+    // Assign a new and unique ID to the duplicated component
+    duplicatedArray.data.forEach(item => {
+      item.id = /* Generate a new unique ID, for example: */ Math.random().toString(36).substring(7);
+    });
+
+    // Create a new array with the duplicated component
+    const newArray = [...this.containerMultipleChoiceOption];
+    newArray.splice(originalIndex + 1, 0, duplicatedArray);
+
+    // Update the state with the new array
+    this.containerMultipleChoiceOption = newArray;
+  }
+},
 
       //  Add Option to multiple Choices & CheckBox & Dropdown 
       addOption(optionName,componentId) {
-        console.log(componentId);
-        console.log(this.containerMultipleChoiceOption[componentId]);
         this.count++
-          this.containerMultipleChoiceOption[componentId][0].data.push({ id: this.count,  placeholder: optionName, image: null });
+          this.containerMultipleChoiceOption[componentId].data.push({ id: this.count,  placeholder: optionName, image: null, value:'' });
           if (optionName === "others") {
 
             this.containerMultipleChoiceOption[componentId].addOtherBtn = !this.containerMultipleChoiceOption[componentId].addOtherBtn
-            console.log(this.containerMultipleChoiceOption[componentId].addOtherBtn);
-            console.log('from add option', this.containerMultipleChoiceOption[componentId]);
-            console.log("aaaa");
           }
           this.resetOptionIdsAndLabels(componentId)
       },
@@ -122,22 +145,20 @@ export const formStore = defineStore('formStore', {
       // fun to change select box values
       updateSelectedValue(value,componentId) {
         this.containerMultipleChoiceOption[componentId].selectedValue = value;
-          // this.selectedValue = value;
-        
+        const [inputType ]= this.optionValues.filter(option => option.value == value)
+        console.log(inputType.inputType);
+        this.containerMultipleChoiceOption[componentId].selectedInput = inputType.inputType;
+         
       },
-  
       //  Remove Option From multiple Choices & CheckBox & Dropdown 
       removeOption(id,componentId){
 
-        const indexToRemove = this.containerMultipleChoiceOption[componentId][0].data.findIndex(option => option.id === id);
-
-        console.log(indexToRemove);
+        const indexToRemove = this.containerMultipleChoiceOption[componentId].data.findIndex(option => option.id === id);
     if (indexToRemove !== -1) {
-      const removedOption = this.containerMultipleChoiceOption[componentId][0].data[indexToRemove];
-      console.log(removedOption);
+      const removedOption = this.containerMultipleChoiceOption[componentId].data[indexToRemove];
 
       // Remove the option using splice
-      this.containerMultipleChoiceOption[componentId][0].data.splice(indexToRemove, 1);
+      this.containerMultipleChoiceOption[componentId].data.splice(indexToRemove, 1);
   
       // Check if the removed option is the "others" placeholder
       if (removedOption.placeholder === "others") {
@@ -150,13 +171,13 @@ export const formStore = defineStore('formStore', {
     // Make The Options Ordered
     resetOptionIdsAndLabels(componentId) {
   
-  const otherOption = this.containerMultipleChoiceOption[componentId][0].data.find(option => option.placeholder === "others");
-  const regularOptions = this.containerMultipleChoiceOption[componentId][0].data.filter(option => option.placeholder === "Option");
-  const rowOptions = this.containerMultipleChoiceOption[componentId][0].data.filter(option => option.placeholder === "Row");
-  const columnOptions = this.containerMultipleChoiceOption[componentId][0].data.filter(option => option.placeholder === "Column");
+  const otherOption = this.containerMultipleChoiceOption[componentId].data.find(option => option.placeholder === "others");
+  const regularOptions = this.containerMultipleChoiceOption[componentId].data.filter(option => option.placeholder === "Option");
+  const rowOptions = this.containerMultipleChoiceOption[componentId].data.filter(option => option.placeholder === "Row");
+  const columnOptions = this.containerMultipleChoiceOption[componentId].data.filter(option => option.placeholder === "Column");
   
   if (otherOption) {
-    const nonOtherOptions = this.containerMultipleChoiceOption[componentId][0].data.filter(option => option.placeholder !== "others");
+    const nonOtherOptions = this.containerMultipleChoiceOption[componentId].data.filter(option => option.placeholder !== "others");
     const updatedOptions = [...nonOtherOptions, otherOption];
     let optionCounter = 0;
     let rowCounter = 0;
@@ -188,13 +209,13 @@ export const formStore = defineStore('formStore', {
                   this.containerMultipleChoiceOption[componentId].addOtherBtn = true;
               }
           }
-    this.containerMultipleChoiceOption[componentId][0].data = updatedOptions;
+    this.containerMultipleChoiceOption[componentId].data = updatedOptions;
   }else {
           let optionCounter = 0;
           let rowCounter = 0;
           let columnsCounter = 0;
   
-          this.containerMultipleChoiceOption[componentId][0].data.forEach((option, index) => {
+          this.containerMultipleChoiceOption[componentId].data.forEach((option, index) => {
               if (option.placeholder === 'Option') {
                   option.id = index + 1;
                   option.label = ++optionCounter;
@@ -213,19 +234,18 @@ export const formStore = defineStore('formStore', {
           });
       }
   
-      this.rowOptions = rowOptions;
-      this.regularOptions = regularOptions;
-      this.columnOptions = columnOptions;
-  
+      this.containerMultipleChoiceOption[componentId].rowOptions = rowOptions;
+      this.containerMultipleChoiceOption[componentId].columnOptions = columnOptions;
+      this.containerMultipleChoiceOption[componentId].regularOptions = regularOptions;
+
   },
   
   
   // change the placeholder od Fields when change the select box 
       getSelectedPlaceholder(selectedValue){
 
-        console.log(selectedValue);
        const selectedOption = this.optionValues.find(option => option.value === selectedValue);
-        console.log(selectedOption);
+      
       return selectedOption ? selectedOption.placeholder : '';
       },
   
