@@ -2,8 +2,9 @@
 
 
 <template>
-  
-  <div>
+  <div class="py-5 m-auto w-50 home-comp">
+    <HeaderComponent/>
+    <PopupModal/>
     <div class="fixed-button-toolbar">
       <ButtonToolbar class="position-sticky"/>
     </div>
@@ -29,18 +30,25 @@
  </template>
  
    <script>
- import { mapActions, mapState } from 'pinia';
- import FormComponent from '../components/FormComponent.vue';
- import { formStore } from '@/stores/formStore';
- import { Sortable } from 'sortablejs-vue3';
-import ButtonToolbar from '@/components/ButtonToolbar.vue';
- 
+  import { mapActions, mapState } from 'pinia';
+  import FormComponent from '../components/FormComponent.vue';
+  import { formStore } from '@/stores/formStore';
+  import { Sortable } from 'sortablejs-vue3';
+  import ButtonToolbar from '@/components/ButtonToolbar.vue';
+  import PopupModal from '@/components/PopupModal.vue';
+import HeaderComponent from '@/components/HeaderComponent.vue';
+
  
  export default {
   components: {
      FormComponent,
      Sortable,
-     ButtonToolbar
+     ButtonToolbar,
+     PopupModal,
+    HeaderComponent
+
+     
+     
   },
   data() {
     return {
@@ -72,7 +80,14 @@ import ButtonToolbar from '@/components/ButtonToolbar.vue';
  }
  </script>
 
-<style scoped>
+<style>
+
+.home-comp{
+  background-color: #f0ebf8;
+  height: 100%;
+  min-height: 100vh;
+}
+
 .fixed-button-toolbar {
  position: fixed;
  top: 35%;  
@@ -81,6 +96,8 @@ import ButtonToolbar from '@/components/ButtonToolbar.vue';
 }
 
 .scrollable-container {
- overflow-x: hidden;
+
 }
+
+
 </style>

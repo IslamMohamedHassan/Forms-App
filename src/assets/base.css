@@ -61,7 +61,10 @@
 body {
   min-height: 100vh;
   color: var(--color-text);
-  background: var(--color-background);
+  height: 100%;
+  /* background: question-com; */
+  background-color: #f0ebf8;
+
   transition:
     color 0.5s,
     background-color 0.5s;
@@ -124,10 +127,4 @@ label{
 
 input{
   height: 40px;
-}
-input:focus{
-  outline: none;
-  background-color: #f0f0f0;
-  border-bottom: 2px solid #7e7e81 !important;
-  transition: 200ms all  ease-in-out;
 }

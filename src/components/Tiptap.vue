@@ -4,15 +4,15 @@
   <div>
     <!-- Tiptap EditorContent component -->
 
-    <editor-content v-model="content" :editor="editor" />
-
+    <editor-content v-model="content" :editor="editor" @focus="handleFocus" />
     <!--  custom  buttons -->
-    <button class="btn btn-light me-1" @click="toggleBold"  v-html="svgContent.boldIcon"></button>
-    <button class="btn btn-light me-1" @click="toggleItalic" v-html="svgContent.italicIcon"></button>
-    <button class="btn btn-light me-1" @click="toggleUnderline" v-html="svgContent.underlineIcon"></button>
-    <button class="btn btn-light me-1" @click="insertLink" v-html="svgContent.insertLinkIcon"></button>
-    <button class="btn btn-light me-1" @click="removeFormat" v-html="svgContent.removeFormatIcon"></button>
-
+    <div v-show="showButtons" class="editor-buttons" :style="{ opacity: showButtons ? 1 : 0, transition: 'opacity 0.5s ease-in-out, visibility 0.5s ease-in-out', visibility: showButtons ? 'visible' : 'hidden' }">
+      <button  @mousedown.prevent class="btn btn-light me-1" @click="toggleBold"  v-html="svgContent.boldIcon"></button>
+      <button  @mousedown.prevent class="btn btn-light me-1" @click="toggleItalic" v-html="svgContent.italicIcon"></button>
+      <button  @mousedown.prevent class="btn btn-light me-1" @click="toggleUnderline" v-html="svgContent.underlineIcon"></button>
+      <button  @mousedown.prevent class="btn btn-light me-1" @click="insertLink" v-html="svgContent.insertLinkIcon"></button>
+      <button  @mousedown.prevent class="btn btn-light me-1" @click="removeFormat" v-html="svgContent.removeFormatIcon"></button>
+    </div>
   </div>
 </template>
 
@@ -26,10 +26,15 @@ export default {
   components: {
     EditorContent,
   },
+  props:{
+    title :
+    {type : String}
+  },
   data() {
     return {
       editor: null,
       content: '<p>Initial content</p>',
+      showButtons: false,
       activeButtons: [],
       svgContent:{
           boldIcon :'<svg fill="" xmlns="http://www.w3.org/2000/svg" height="16" width="12" viewBox="0 0 384 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.--><path d="M0 64C0 46.3 14.3 32 32 32H80 96 224c70.7 0 128 57.3 128 128c0 31.3-11.3 60.1-30 82.3c37.1 22.4 62 63.1 62 109.7c0 70.7-57.3 128-128 128H96 80 32c-17.7 0-32-14.3-32-32s14.3-32 32-32H48V256 96H32C14.3 96 0 81.7 0 64zM224 224c35.3 0 64-28.7 64-64s-28.7-64-64-64H112V224H224zM112 288V416H256c35.3 0 64-28.7 64-64s-28.7-64-64-64H224 112z"/></svg>',
@@ -43,31 +48,68 @@ export default {
     };
   },
   mounted() {
+    console.log(this.$props.title);
+    if(this.$props.title === "description"){
+      this.content = '<p>Form Description</p>'
+    }else if(this.$props.title === "title"){
+      this.content = '<p>Untitled form</p>'
+    } 
+    
     this.editor = new Editor({
       content: this.content,
       extensions: [
         StarterKit,
         Underline
-       
       ],
+      autofocus: true,
+      
       editorProps: {
     attributes: {
-      class: 'tiptol',
+      class: this.$props.title,
     },
+   
+   
+    
+
   },
     });
+
+
+    this.editor.on('focus', () => {
+    this.handleFocus();
+    });
+
+    this.editor.on('blur', () => {
+    this.handleBlur();
+    });
+
+    console.log(this.editor);
+
   },
+  
   beforeUnmount() {
     this.editor.destroy();
   },
   methods: {
 
+    handleFocus() {
+      this.showButtons = true;
+    },
+    handleBlur() {
+    this.showButtons = false;
+    },
+
     isActive(button) {
       return this.activeButtons.includes(button);
+    },
+    // to show and hidden buttons
+    onEditorFocus() {
+      
     },
 
     toggleActiveState(button) {
       if (this.isActive(button)) {
+        
         this.activeButtons = this.activeButtons.filter((btn) => btn !== button);
       } else {
         this.activeButtons.push(button);
@@ -75,11 +117,13 @@ export default {
     },
     toggleBold() {
         // Clear existing formatting to prevent conflicts
-  this.editor.chain().focus().unsetAllMarks().clearNodes().run();
-  this.toggleActiveState('bold');
+      this.editor.chain().focus().unsetAllMarks().clearNodes().run();
+      this.toggleActiveState('bold');
+      this.editor.commands.focus();
+
   
   // Toggle bold formatting
-  this.editor.chain().focus().toggleBold().run();
+    this.editor.chain().focus().toggleBold().run();
     },
     toggleItalic() {
       this.editor.chain().focus().toggleItalic().run();
@@ -114,7 +158,35 @@ export default {
     padding: 0px 10px ;
     overflow: hidden; /* Hide content that overflows */
 }
-.tiptol:focus{
+
+.description
+{
+  font-size: 16px;
+    height: 40px;
+    line-height: 40px;
+    outline: none;
+    padding: 0px 10px ;
+    overflow: hidden; /* Hide content that overflows */
+}
+.title{
+  font-size: 40px;
+    height: 60px;
+    line-height: 60px;
+    outline: none;
+    padding: 0px 10px ;
+    overflow: hidden; /* Hide content that overflows */
+}
+.question{
+  font-size: 25px;
+    height: 50px;
+    border-bottom: 1px solid black;
+    line-height: 50px;
+    outline: none;
+    padding: 0px 10px ;
+    overflow: hidden; /* Hide content that overflows */
+}
+
+.question:focus{
     transition: 500ms all ease-in-out;
     background-color: #f0f0f0;
 }
@@ -123,4 +195,6 @@ export default {
   background-color: #007bff !important;
   color: #fff;
 }
+
+
 </style>

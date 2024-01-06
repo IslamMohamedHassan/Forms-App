@@ -1,22 +1,22 @@
 <template>
     <div>
         <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
-            <button type="button" class="btn btn-secondary" @click="addComponent" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Add Question">
+            <button type="button" class="btn btn-secondary" @click="addComponent" v-tippy="{ content: 'Add Question', placement: 'right'  }" >
                 <span v-html="plusIcon"></span>
             </button>
-            <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Import Question">
+            <button type="button" class="btn btn-secondary"  data-bs-toggle="modal" data-bs-target="#staticBackdrop" v-tippy="{ content: 'Import Question', placement: 'right' }">
                 <span v-html="importQuestionsIcon"></span>
             </button>
-            <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Add title And Description">
+            <button type="button" class="btn btn-secondary" v-tippy="{ content: 'Add title And Description', placement: 'right' }">
                 <span v-html="titleIcon"></span>
             </button>
-            <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Add Image">
+            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#staticBackdrop"  v-tippy="{ content: 'Add Image', placement: 'right' }" >
                 <span v-html="imageIcon"></span>
             </button>
-            <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Add Video">
+            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#staticBackdrop"  v-tippy="{ content: 'Add Video', placement: 'right' }" >
                 <span v-html="videoIcon"></span>
             </button>
-            <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Add Section">
+            <button type="button" class="btn btn-secondary " v-tippy="{ content: 'Add Section', placement: 'right' }" >
                 <span v-html="rectangleIcon"></span>
             </button>
         </div>
@@ -25,7 +25,6 @@
 
 <script>
 import { svgIcons } from './icons/SvgIcons';
-// import { Tooltip } from "bootstrap/dist/js/bootstrap.esm.min.js";
 import { formStore } from '@/stores/formStore';
 import { mapActions } from 'pinia';
 

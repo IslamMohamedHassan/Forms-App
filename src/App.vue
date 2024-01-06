@@ -11,10 +11,18 @@ export default{
 </script>
 
 <template>
-  <RouterView />
+  <main class="main">
+    <RouterView />
+  </main>
 </template>
 
 <style scoped>
+
+.main{
+  /* height: 100vh;*/
+  background-color: #f0ebf8;
+
+}
 /* header {
   line-height: 1.5;
   max-height: 100vh;

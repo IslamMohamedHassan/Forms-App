@@ -1,9 +1,9 @@
 <template>
-  <section class="py-5 m-auto w-50 border border-1 border-dark mt-5 rounded-3">
+  <section class="py-3  mt-5 rounded-3 question-comp">
     <div class="container">
       <div class="form-wrapper row justify-content-between align-items-start">
         <div class="col-lg-8">
-          <Tiptap/>
+          <Tiptap :title="'question'"/>
         </div>
         <div class="col-lg">
           <div class="image-label">
@@ -11,7 +11,7 @@
             <input style="display: none;" type="file" id="up-img">
           </div>
         </div>
-        <div class="col-lg-3 h-50px">
+        <div class="col-lg-3 h-50px mt-1">
           <div class="dropdown w-100">
             <button class="btn btn-primary dropdown-toggle w-100" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               {{ getContainerMultipleChoiceOption[componentIndex].selectedValue }}
@@ -224,7 +224,7 @@
 
 
 
-      <hr class="my-5">
+      <hr class="my-2">
 
       <div class="row">
         <div class="col-lg-12 d-flex justify-content-end">
@@ -235,10 +235,10 @@
             <button  :disabled="getContainerMultipleChoiceOption.length === 1"   class="border-0 bg-transparent" @click="removeComponent(componentIndex)"><i class="fa-regular fa-trash-can "></i></button>
           </div>
           <div class="d-flex align-items-center border-start border-3">
-            <label class="form-check-label me-2 ms-3" for="flexSwitchCheckDefault">Required <p>{{ componentIndex }}</p></label>
+            <label class="form-check-label me-2 ms-3" for="flexSwitchCheckDefault">Required</label>
 
             <div class="form-check form-switch">
-              <input class="form-check-input custom-switch" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+              <input class="form-check-input custom-switch" type="checkbox" @click="requiredSwitch(componentIndex)" role="switch" id="flexSwitchCheckDefault" :checked ="getContainerMultipleChoiceOption[componentIndex].required">
             </div>
           </div>
         </div>
@@ -280,7 +280,7 @@ export default {
    
   },
   methods: {
-    ...mapActions(formStore, ['removeComponent','updateSelectedValue','addOption','removeOption','resetOptionIdsAndLabels','getSelectedPlaceholder','chooseFileTypes','handleDropdowns','duplicateComponent']),
+    ...mapActions(formStore, ['requiredSwitch','removeComponent','updateSelectedValue','addOption','removeOption','resetOptionIdsAndLabels','getSelectedPlaceholder','chooseFileTypes','handleDropdowns','duplicateComponent']),
 
   },
   
@@ -296,6 +296,11 @@ export default {
 </script>
 
 <style>
+
+.question-comp{
+  background-color: #fff;
+  border: 1px solid #d9d9d9;
+}
   .image-label{
     width: fit-content;
     padding: 10px;

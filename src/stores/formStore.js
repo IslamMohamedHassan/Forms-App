@@ -13,6 +13,7 @@ export const formStore = defineStore('formStore', {
       addOtherBtn : true,
       selectedValue : 'Multiple Choice',
       selectedInput: 'radio',
+      required: false,
       regularOptions : [""],
       rowOptions : [""],
       columnOptions : [""],}] ,
@@ -81,6 +82,9 @@ export const formStore = defineStore('formStore', {
     },
   }, 
   actions: {
+
+
+
    
     updateContainerMultipleChoiceOrder(newIndex, oldIndex) {
     // Update the order in the state
@@ -257,5 +261,11 @@ duplicateComponent(originalIndex) {
       handleDropdowns(value,dropdownName){
         this.dropdowns[dropdownName] = value;
       },
+
+      // required switch 
+      requiredSwitch(componentId){
+        this.containerMultipleChoiceOption[componentId].required = !this.containerMultipleChoiceOption[componentId].required 
+        console.log(this.containerMultipleChoiceOption[componentId].required);
+      }
   },
 })
