@@ -1,24 +1,31 @@
-<template>
-  <section class="py-3  mt-5 rounded-3 question-comp">
-    <div class="container">
-      <div class="form-wrapper row justify-content-between align-items-start">
-        <div class="col-lg-8">
-          <Tiptap :title="'question'"/>
+<template >
+  <section :id="`comp${componentIndex}`"  @click="selectElement(componentIndex)"    @focusin="selectElement(componentIndex)"  class=" rounded-3 question-comp mt-2 shadow-sm"
+  :class="{ 'focused': getContainerMultipleChoiceOption[componentIndex].isSelected  }">
+    <div class="border-0 bg-transparent text-secondary d-flex d-block w-100 justify-content-center">
+      <span   style="cursor: move;" class="handle">: : :</span>
+    </div>
+    <div  class="container py-3">
+
+      <!-- start questions row  -->
+      <div  class="form-wrapper row justify-content-between flex-wrap align-items-start">
+        <div  class="col-xl-7 col-lg-6 col-md-12 col-sm-12">
+          <Tiptap class="w-100"  :title="'question'"  :id ="componentIndex"  />
         </div>
-        <div class="col-lg">
-          <div class="image-label">
-            <label for="up-img"><i class="fa fa-image"></i></label>
+        <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2 col-2">
+          <div class="">
+            <label for="up-img"><i class="fa fa-image  image-label"></i></label>
             <input style="display: none;" type="file" id="up-img">
           </div>
         </div>
-        <div class="col-lg-3 h-50px mt-1">
+        <div  class="col-xl-4  col-lg-5   col-md-9 col-sm-10 col-10  h-50px mt-1">
           <div class="dropdown w-100">
-            <button class="btn btn-primary dropdown-toggle w-100" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              {{ getContainerMultipleChoiceOption[componentIndex].selectedValue }}
+            <button  class="btn  drop-down-btn fw-bold   dropdown-toggle w-100 d-flex align-items-center justify-content-evenly" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="d-block" v-html="getContainerMultipleChoiceOption[componentIndex].selectedIcon"></span>
+              <span class="d-block font-size-16">{{ getContainerMultipleChoiceOption[componentIndex].selectedValue }}</span>
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
               <li style="cursor:pointer" v-for="option in optionValues" :key="option.value">
-                <a class="dropdown-item d-flex align-items-center" @click="updateSelectedValue(option.value,componentIndex)">
+                <a class="dropdown-item d-flex align-items-center" @click="updateSelectedValue(option.value,option.icon,componentIndex)">
                   <span class="d-block  me-2" v-html="option.icon"></span>
                   <span class="d-block font-size-20">   {{ option.label }}</span> 
                 </a>
@@ -27,23 +34,25 @@
           </div>
         </div>
       </div>
+       <!-- End questions row  -->
+
       <!-- Start row of multi choice and multi Checkboxes -->
       <div class="row align-items-center" v-if="getContainerMultipleChoiceOption[componentIndex].selectedValue === 'Multiple Choice' || getContainerMultipleChoiceOption[componentIndex].selectedValue == 'Checkboxes' || getContainerMultipleChoiceOption[componentIndex].selectedValue == 'Dropdown'">
-        <div  v-for="(option,i) in  data.data" :key="i" >
+        <div  @mouseenter="option.showImgIcon = true"  @mouseleave="option.showImgIcon = false"   v-for="(option,i) in  data.data" :key="i" >
           <div class="d-flex align-items-center justify-content-between" v-if="option.placeholder !== 'Row' && option.placeholder !== 'Column'">
           <div>
             <input v-if="getContainerMultipleChoiceOption[componentIndex].selectedValue === 'Multiple Choice'" type='radio'  class="form-check-input custom-radio"  disabled>
             <input v-if="getContainerMultipleChoiceOption[componentIndex].selectedValue === 'Checkboxes'" type="checkbox"  class="form-check-input custom-radio"  disabled> 
           </div>
-          <div class="w-100">
-            <input type="text" v-model="option.value" class="answer-title w-100"  :placeholder="(option.placeholder ==='Option') ? option.placeholder  + ' '+ option.label : option.placeholder">
+          <div class="w-100 py-2">
+            <input @focusin="option.showImgAltIcon = true"  @focusout="option.showImgAltIcon = false" type="text" v-model="option.value" class="answer-title w-100"  :placeholder="(option.placeholder ==='Option') ? option.placeholder  + ' '+ option.label : option.placeholder">
           </div>
-          <div v-if="option.placeholder !== 'others' && getContainerMultipleChoiceOption[componentIndex].selectedValue !== 'Dropdown'" class="image-label ms-3">
-            <label for="up-img"><i class="fa fa-image"></i></label>
+          <div  v-if="option.placeholder !== 'Others' && getContainerMultipleChoiceOption[componentIndex].selectedValue !== 'Dropdown'" class=" ms-3">
+            <label  v-show="option.showImgIcon || option.showImgAltIcon"   for="up-img"><i class=" fa fa-image image-label"></i></label>
             <input style="display: none;" type="file" id="up-img">
           </div>
           <div class="ms-3 d-flex">
-            <button v-if="getContainerMultipleChoiceOption[componentIndex].regularOptions.length !== 1 || option.placeholder === 'others'"  @click="removeOption(option.id,componentIndex)" class="border-0 bg-transparent fw-bold fs-4"><i class="fa-solid fa-x text-secondary"></i></button>
+            <button v-if="getContainerMultipleChoiceOption[componentIndex].regularOptions.length !== 1 || option.placeholder === 'Others'"  @click="removeOption(option.id,componentIndex)" class="border-0 bg-transparent fw-bolder fs-6"><i class="fa-solid fa-x fw-bolder text-secondary"></i></button>
           </div>
         </div>
         </div>
@@ -54,16 +63,16 @@
           "> or </span>
           <button v-if="getContainerMultipleChoiceOption[componentIndex].addOtherBtn 
           && getContainerMultipleChoiceOption[componentIndex].selectedValue !== 'Dropdown'
-          "  :class="`border-0 bg-transparent add-field-btn text-primary ${!getContainerMultipleChoiceOption[componentIndex].addOtherBtn? 'd-none':''}`" @click="addOption('others',componentIndex)">Add "Other"</button>
+          "  :class="`border-0 bg-transparent add-field-btn text-primary ${!getContainerMultipleChoiceOption[componentIndex].addOtherBtn? 'd-none':''}`" @click="addOption('Others',componentIndex)">Add "Other"</button>
         </div>
        
       </div> 
       <!-- End row of multi choice and multi Checkboxes -->
 
       <!--  Start row of Short Answer & Paragraph & Date & Time -->
-      <div class="row align-items-center" v-if="getContainerMultipleChoiceOption[componentIndex].selectedValue === 'Short Answer' || getContainerMultipleChoiceOption[componentIndex].selectedValue === 'Paragraph' || getContainerMultipleChoiceOption[componentIndex].selectedValue === 'Date' || getContainerMultipleChoiceOption[componentIndex].selectedValue === 'Time'">
+      <div class="row align-items-center mt-2" v-if="getContainerMultipleChoiceOption[componentIndex].selectedValue === 'Short Answer' || getContainerMultipleChoiceOption[componentIndex].selectedValue === 'Paragraph' || getContainerMultipleChoiceOption[componentIndex].selectedValue === 'Date' || getContainerMultipleChoiceOption[componentIndex].selectedValue === 'Time'">
         <div>          
-          <input :placeholder="getSelectedPlaceholder(getContainerMultipleChoiceOption[componentIndex].selectedValue)" :type="getContainerMultipleChoiceOption[componentIndex].selectedInput" disabled class="form-control">
+          <input :placeholder="getSelectedPlaceholder(getContainerMultipleChoiceOption[componentIndex].selectedValue)" :type="getContainerMultipleChoiceOption[componentIndex].selectedInput" disabled class="form-control border-0 w-50">
         </div>
       </div>
       <!-- Start row of Short Answer & Paragraph & Date & Time -->
@@ -172,13 +181,13 @@
         <div class="row align-items-center justify-content-start mt-4">
           <div>
             <label class="me-2">{{dropdowns.linearScaleStart}}</label>
-            <input class="border-0 " type="text"  v-model="option.value" placeholder="Label (optional)">
+            <input class="border-0 " type="text"  placeholder="Label (optional)">
           </div>
         </div>
         <div class="row align-items-center justify-content-start mt-4">
           <div>
             <label class="me-2">{{dropdowns.linearScaleEnd}}</label>
-            <input class="border-0 " type="text"  v-model="option.value" placeholder="Label (optional)">
+            <input class="border-0 " type="text"   placeholder="Label (optional)">
           </div>
         </div>
       </div>
@@ -189,9 +198,9 @@
         <div class="col-lg-6">
           <h6>Rows</h6>
           <div  v-for="(option,i) in  data.data" :key="i">
-            <div v-if="option.placeholder == 'Row'">
+            <div class="d-flex align-items-center" v-if="option.placeholder == 'Row'">
               <label  class="me-1" for="">{{ option.label }} . </label>
-              <input  class="border-0" type="text"  v-model="option.value" :placeholder="option.placeholder + ' ' + option.label">
+              <input  class="border-0 flex-grow-1" type="text"  v-model="option.value" :placeholder="option.placeholder + ' ' + option.label">
               <button 
                 v-if="getContainerMultipleChoiceOption[componentIndex].rowOptions.length !== 1"
                 @click="removeOption(option.id,componentIndex)" class="border-0 bg-transparent fw-bold fs-6 "><i class="fa-solid fa-x text-secondary"></i></button>
@@ -203,12 +212,12 @@
           </div>
         </div>
         <div class="col-lg-6">
-          <h6>Columns</h6>
+          <h6 class="mt-4 mt-lg-0">Columns</h6>
           <div  v-for="(option,i) in  data.data" :key="i">
             <div class="d-flex align-items-center" v-if="option.placeholder == 'Column'">
               <input v-if="getContainerMultipleChoiceOption[componentIndex].selectedValue === 'Multiple Choice Grid'"  class=" form-check-input custom-radio me-2" type="radio" disabled>
               <input v-if="getContainerMultipleChoiceOption[componentIndex].selectedValue === 'Checkbox Grid'"  class=" form-check-input custom-radio me-2" type="checkbox" disabled>
-              <input   class="border-0" type="text"  v-model="option.value" :placeholder="option.placeholder + ' ' + option.label">
+              <input   class="border-0 flex-grow-1" type="text"  v-model="option.value" :placeholder="option.placeholder + ' ' + option.label">
               <button  
                 v-if="getContainerMultipleChoiceOption[componentIndex].columnOptions.length !== 1"
                 @click="removeOption(option.id,componentIndex)" class="border-0 bg-transparent fw-bold fs-6 "><i class="fa-solid fa-x text-secondary"></i></button>
@@ -258,12 +267,15 @@ export default {
     Tiptap,
   },
   computed: {
-    ...mapState(formStore, ['getContainerMultipleChoiceOption','compId','count','fileOptions','dropdowns','fileTypes','optionValues']),
+    ...mapState(formStore, ['isSelected','getContainerMultipleChoiceOption','compId','count','fileOptions','dropdowns','fileTypes','optionValues']),
   },
 
   data() {
     return {
-     
+      modalData: {
+      title: 'Default Title',
+    },
+   
     };
   },
   props: {
@@ -276,19 +288,15 @@ export default {
   },
   // watch the select box changes 
   
-    watch: {
-   
-  },
   methods: {
-    ...mapActions(formStore, ['requiredSwitch','removeComponent','updateSelectedValue','addOption','removeOption','resetOptionIdsAndLabels','getSelectedPlaceholder','chooseFileTypes','handleDropdowns','duplicateComponent']),
+    ...mapActions(formStore, ['updateTiptapContent','deselectElement','selectElement','requiredSwitch','removeComponent','updateSelectedValue','addOption','removeOption','resetOptionIdsAndLabels','getSelectedPlaceholder','chooseFileTypes','handleDropdowns','duplicateComponent']),
+    updateTiptapContent (index, newContent) {
+      this.updateTiptapContent(index, newContent);
+    }
 
+    
   },
   
-
-  mounted(){
-  // console.log(this.data);
-   
-  },
 
   
  
@@ -300,6 +308,13 @@ export default {
 .question-comp{
   background-color: #fff;
   border: 1px solid #d9d9d9;
+}
+.drop-down-btn{
+  background-color: #fff;
+  border: 1px solid #d9d9d9 !important;
+  padding: 10px 0 !important;
+  border-radius: 5px !important;
+  color: #202124 !important;
 }
   .image-label{
     width: fit-content;
@@ -314,8 +329,8 @@ export default {
   .btn-icon{
     width: fit-content;
     border-radius: 50%;
-    width: 50px;
-    height: 50px;
+    width: 45px;
+    height: 45px;
     text-align: center;
     line-height: 50px;
     cursor: pointer;
@@ -325,8 +340,9 @@ export default {
     width: 100%; 
     display: block;
   }
-  .btn-icon button i{
-    font-size: 25px;
+  .btn-icon button i{ 
+    font-size: 22px;
+
     color: #5f6368;
   }
   .btn-icon:hover{
@@ -335,10 +351,16 @@ export default {
   .image-label:hover{
     background-color: #f0f0f0;
   }
+
   .image-label i {
-    font-size: 30px;
+    font-size: 22px;
+    line-height: 30px;
     color: #5f6368;
     cursor: pointer;
+  }
+  i.image-label{
+    font-size: 22px;
+    line-height: 30px;
   }
   .form-switch .form-check-input{
     width: 50px !important;
@@ -368,4 +390,9 @@ export default {
     height: 50px;
   }
 
+  .focused {
+  /* Add your styles for the focused class here */
+  border-left: 10px solid #673ab7;
+  transition: .2s all ease-in-out;
+}
 </style>

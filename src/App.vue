@@ -16,12 +16,28 @@ export default{
   </main>
 </template>
 
-<style scoped>
+<style>
 
 .main{
   /* height: 100vh;*/
   background-color: #f0ebf8;
 
+}
+@media (max-width : 600px) {
+  .main {
+    width: 100% !important;
+    
+  }
+}
+a.router-link-exact-active {
+  color: #686868;
+  text-decoration: none;
+}
+
+a.router-link-exact-active:focus {
+  background-color: transparent;
+  color: #000;
+  font-weight: bolder;
 }
 /* header {
   line-height: 1.5;
@@ -40,13 +56,6 @@ nav {
   margin-top: 2rem;
 }
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
 
 nav a {
   display: inline-block;

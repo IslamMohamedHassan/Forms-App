@@ -1,5 +1,5 @@
 <template>
-    <header class="form-title-header pb-4">
+    <header class="form-title-header pb-4 shadow-sm">
         <div class="border-1 border-bottom py-1">
             <Tiptap :title="'title'"/>
         </div>
@@ -17,11 +17,6 @@ export default {
     components:{
         Tiptap,
     },
-    data () {
-        return {
-
-        }
-    }
 }
 </script>
 
